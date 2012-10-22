@@ -1,9 +1,10 @@
 {
   "name": "sleepy",
-  "description": "express / mongoose test app",
+  "description": "wiki app",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "express": "3.0.0rc4"
+    "express": "3.0.0rc4",
+    "mongoose": "3.2.1"
   }
 }

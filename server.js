@@ -1,7 +1,9 @@
 var express = require("express");
 var path = require("path");
 var mongoose = require('mongoose');
+var markdown = require('markdown');
 var app = express();
+var config = require('./config');
 
 var Article = new mongoose.Schema({
   title: {
@@ -13,6 +15,10 @@ var Article = new mongoose.Schema({
     type: String,
     required: true
   },
+  htmlText: {
+    type: String,
+    required: true
+  },
   author: {
     type: String
   },
@@ -20,14 +26,15 @@ var Article = new mongoose.Schema({
   files: [],
   modified: {
     type: Date,
-    default: Date.now
+  default:
+    Date.now
   }
 });
 
 var ArticleModel = mongoose.model('Article', Article);
 
 // Database
-mongoose.connect('mongodb://mrcrifis:campfire12@alex.mongohq.com:10084/nikki');
+mongoose.connect('mongodb://' + config.mhquser + ':' + config.mhqpass + '@alex.mongohq.com:10084/nikki');
 
 // Config
 app.configure(function() {
@@ -59,7 +66,8 @@ app.post('/articles', function(req, res) {
   // tags, files, etc... prevalidation?
   article = new ArticleModel({
     title: req.body.title,
-    description: req.body.description
+    description: req.body.description,
+    htmlText: markdown.markdown.toHTML(req.body.description)
   });
   article.save(function(err) {
     if(!err) {
@@ -85,7 +93,7 @@ app.put('/articles/:id', function(req, res) {
   return ArticleModel.findById(req.params.id, function(err, article) {
     article.title = req.body.title;
     article.description = req.body.description;
-    article.modified = req.body.modified;
+    article.htmlText = req.body.description;
     return article.save(function(err) {
       if(!err) {
         console.log("updated");
