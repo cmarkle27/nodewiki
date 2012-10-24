@@ -14,84 +14,112 @@ var Article = Backbone.Model.extend({
 
 });
 
+// ------------------------------------------------------------------------
+
+var ArticleList = Backbone.Collection.extend({
+
+	initialize: function() {
+		this.display();
+	},
+
+	model: Article,
+
+	url: "/articles",
+
+	display: function() {
+		this.fetch({
+			success: function(coll, resp) {
+				var articlesListView = new ArticlesListView({
+					collection: coll
+				});
+			}
+		});
+	},
+
+	getLast: function() {
+		this.fetch({
+			success: function(coll, resp) {
+				if (coll.length) {
+					window.location = '/#' + coll.last().get('_id');
+				}
+			}
+		});
+	}
+
+});
+
+// ------------------------------------------------------------------------
 
 var ArticleView = Backbone.View.extend({
 
 	initialize: function() {
 		this.render(); // render on init
-		// console.log(this.model);
 	},
 
 	render: function() {
 		var title = '<h1>' + this.model.get('title') + '</h1>';
 		var htmlText = '<div>' + this.model.get('htmlText') + '</div>';
 		$(this.el).html( title + htmlText );
-		console.log(this.el);
 	}
 
 });
 
+
 // ------------------------------------------------------------------------
-var Articles = Backbone.Collection.extend({
-	model: Article,
-	url: "/articles"
-});
 
+var ArticlesListView = Backbone.View.extend({
 
-var ArticlesView = Backbone.View.extend({
+	tagName: 'ul',
 
 	initialize: function() {
 		_.bindAll(this, "render");
 		this.render(); // render on init
-		// this.collection.bind('add', this.render); // render on model change
 	},
 
 	render: function() {
-		console.log(this.collection);
-		/*		this.collection.each(function(article) {
-			// var articleView = new articleView({model: article});
-			console.log(article);
-		}, this);*/
+		var navItems = "";
+		this.collection.each(function(article) {
+			navItems += '<li><a href=#' + article.get('_id') + ">" + article.get('title') + '</a></li>';
+		}, this);
+		$('.sidebar-nav').html(navItems);
 	}
 
 });
 
 // ------------------------------------------------------------------------
-// index.js
-var articles = new Articles({});
-articles.fetch({
-	success: function(coll, resp) {
-		// console.log(coll);
-		// console.log(coll.first());
-		// console.log(coll.last());
-		var articlesView = new ArticlesView({
-			collection: coll
-		});
 
-		if (coll.length) {
-			var articleView = new ArticleView({model:coll.last()});
-			$("#view-content").html(articleView.el);
-		}
+// we may need to use some promises to avoid doing two collection fetches
+// (one for nav, one for last article)
+// i.e.: on(rticleList.fetch()) f.getLast();
 
-	}
-});
-
-// articlesView.render();
+var articleList = new ArticleList({});
+//articleList.display()
 
 var AppRouter = Backbone.Router.extend({
-
 	routes: {
 		"": "setDefault",
 		"edit/:id": "getPost",
 		"*actions": "defaultRoute"
-	},
-
-	setDefault: function() {
-		window.location = '/#507ef0a30631a120fd000001';
 	}
-
 });
 
+// ------------------------------------------------------------------------
 
 // Initiate the router
-var app_router = new AppRouter();
+var appRouter = new AppRouter();
+
+appRouter.on('route:setDefault', function() {
+	articleList.getLast();
+});
+
+appRouter.on('route:defaultRoute', function(actions) {
+	var article = new Article({_id:actions});
+	article.fetch({
+		success: function(model, resp) {
+			var articleView = new ArticleView({model:model});
+			$("#view-content").html(articleView.el);
+		}
+	});
+});
+
+Backbone.history.start();
