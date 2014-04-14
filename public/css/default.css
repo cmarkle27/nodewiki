@@ -13,7 +13,7 @@ div.actions {
 }
 
 #article-content {
-	width: 100%;	
+	width: 100%;
 }
 
 /**************************************OLD**********************************/
@@ -110,20 +110,20 @@ div.actions {
 	border:0
 }
 
-.markdown-container{
-	box-shadow:inset 0px 0px 14px #333333;	
+.markdown-container {
+	box-shadow:inset 0px 0px 14px #333333;
 		-moz-box-shadow:inset 0px 0px 14px #333333;
 		-webkit-box-shadow:inset 0px 0px 14px #333333;
-	padding: 20px;	
+	padding: 20px;
 }
 
-.markdown-container .markdown{
+.article-content {
 	border: 0px;
 	height: 200px;
 	width: 100%;
 }
 
-.markdown-container .markdown:focus{
+.article-content:focus{
 	background: none;
 }
 

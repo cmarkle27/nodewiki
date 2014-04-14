@@ -48,7 +48,11 @@ app.configure(function() {
   }));
 });
 
+///////////////////////////////////////////////////////////////////////////
 // routes
+///////////////////////////////////////////////////////////////////////////
+
+// list all
 app.get('/articles', function(req, res) {
   return ArticleModel.find(function(err, articles) {
     if(!err) {
@@ -59,6 +63,7 @@ app.get('/articles', function(req, res) {
   });
 });
 
+// create new
 app.post('/articles', function(req, res) {
   var article;
   console.log("POST: ");
@@ -79,6 +84,7 @@ app.post('/articles', function(req, res) {
   return res.send(article); // message instead???
 });
 
+// display single
 app.get('/articles/:id', function(req, res) {
   return ArticleModel.findById(req.params.id, function(err, article) {
     if(!err) {
@@ -89,6 +95,7 @@ app.get('/articles/:id', function(req, res) {
   });
 });
 
+// update single
 app.put('/articles/:id', function(req, res) {
   return ArticleModel.findById(req.params.id, function(err, article) {
     article.title = req.body.title;
@@ -105,6 +112,7 @@ app.put('/articles/:id', function(req, res) {
   });
 });
 
+// delete single
 app.delete('/articles/:id', function(req, res) {
   return ArticleModel.findById(req.params.id, function(err, article) {
     return article.remove(function(err) {
@@ -120,4 +128,4 @@ app.delete('/articles/:id', function(req, res) {
 
 // Launch server
 app.listen(4242);
-console.log("wiki started");
+console.log("wiki started on port 4242");

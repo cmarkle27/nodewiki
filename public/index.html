@@ -32,31 +32,24 @@
     <div class="container-fluid">
 
 <div class="row-fluid">
+  <div class="span9">
 
-    <div class="span9">
-      <div class="hero-unit">
-      	<div class="actions">
-     	<button id="edit_article" class="btn">Edit</button>
-     	<button id="save_article" class="btn btn-primary" style="display:none;">Save</button>
-     	<button id="cancel_edit_article" class="btn" style="display:none;">Cancel</button>
+    <div class="hero-unit">
+    	<div class="actions">
+     	<button id="edit-article" class="btn">Edit</button>
+     	<button id="save-article" class="btn btn-primary" style="display:none;">Save</button>
+     	<button id="cancel-edit" class="btn" style="display:none;">Cancel</button>
 		</div>
 
 		<div id="view-content"><h2 style="color:#ddd">Loading...</h2></div>
-		<div id="edit-content" style="display:none;">
-			<form>
-				<label for="edit_title">Title
-				<input type="text" id="edit_title" value="<?php echo $this->article->title;?>"></label>
-				<label for="edit_subtitle">Description
-				<input type="text" id="edit_subtitle" value="<?php echo $this->article->subtitle;?>"></label>
-				<textarea name="article-content" id="article-content" rows="10" data-id="<?php echo $this->article->article_id;?>" data-oper="edit"><?php echo $this->article->content;?></textarea>
-			</form>
-		</div>
-	  </div>
-    </div><!--/span-->
+		<div id="edit-content" style="display:none;"></div>
 
-    <div class="span3">
-      <div class="well sidebar-nav"></div>
-    </div><!--/span-->
+  </div>
+</div>
+
+<div class="span3">
+  <div class="well sidebar-nav"></div>
+</div>
 
 </div><!--/row-->
 
@@ -83,5 +76,7 @@
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
     <script src="./js/backbone-min.js"></script>
     <script src="./js/article.js"></script>
+    <script src="./js/article-list.js"></script>
+    <script src="./js/app.js"></script>
 </body>
 </html>

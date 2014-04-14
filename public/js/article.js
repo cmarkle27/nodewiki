@@ -8,42 +8,12 @@ var Article = Backbone.Model.extend({
 		"files": []
 	},
 
+	initialize: function(attributes) {
+		this.id = attributes['_id'] || attributes['id'];
+    },
+
 	url: function() {
 		return '/articles/' + this.get('_id');
-	}
-
-});
-
-// ------------------------------------------------------------------------
-
-var ArticleList = Backbone.Collection.extend({
-
-	initialize: function() {
-		this.display();
-	},
-
-	model: Article,
-
-	url: "/articles",
-
-	display: function() {
-		this.fetch({
-			success: function(coll, resp) {
-				var articlesListView = new ArticlesListView({
-					collection: coll
-				});
-			}
-		});
-	},
-
-	getLast: function() {
-		this.fetch({
-			success: function(coll, resp) {
-				if (coll.length) {
-					window.location = '/#' + coll.last().get('_id');
-				}
-			}
-		});
 	}
 
 });
@@ -53,73 +23,44 @@ var ArticleList = Backbone.Collection.extend({
 var ArticleView = Backbone.View.extend({
 
 	initialize: function() {
-		this.render(); // render on init
+		this.render();
+	},
+
+	edit: function() {
+		//window.location = '/#edit/' + this.model.get('_id');
+		$('#edit-article').hide();
+		$('#save-article').show();
+		$('#cancel-edit').show();
+
+	},
+
+	saveChanges: function(form) {
+		this.model.set('title', form.title);
+		this.model.save();
+		//alert(this.model.isNew());
 	},
 
 	render: function() {
 		var title = '<h1>' + this.model.get('title') + '</h1>';
 		var htmlText = '<div>' + this.model.get('htmlText') + '</div>';
 		$(this.el).html( title + htmlText );
+		console.log(this.model);
 	}
 
 });
 
-
 // ------------------------------------------------------------------------
 
-var ArticlesListView = Backbone.View.extend({
-
-	tagName: 'ul',
+var EditView = Backbone.View.extend({
 
 	initialize: function() {
-		_.bindAll(this, "render");
 		this.render(); // render on init
 	},
 
 	render: function() {
-		var navItems = "";
-		this.collection.each(function(article) {
-			navItems += '<li><a href=#' + article.get('_id') + ">" + article.get('title') + '</a></li>';
-		}, this);
-		$('.sidebar-nav').html(navItems);
+		var title = '<label for=edit_title>Title</label>' + '<input type=text name=title value="' + this.model.get('title') + '">';
+		var editText = '<textarea name=article-content id=article-content rows=10>' + this.model.get('description') + '</textarea>';
+		$(this.el).html( title + editText );
 	}
 
 });
-
-// ------------------------------------------------------------------------
-
-// we may need to use some promises to avoid doing two collection fetches
-// (one for nav, one for last article)
-// i.e.: on(rticleList.fetch()) f.getLast();
-
-var articleList = new ArticleList({});
-//articleList.display()
-
-var AppRouter = Backbone.Router.extend({
-	routes: {
-		"": "setDefault",
-		"edit/:id": "getPost",
-		"*actions": "defaultRoute"
-	}
-});
-
-// ------------------------------------------------------------------------
-
-// Initiate the router
-var appRouter = new AppRouter();
-
-appRouter.on('route:setDefault', function() {
-	articleList.getLast();
-});
-
-appRouter.on('route:defaultRoute', function(actions) {
-	var article = new Article({_id:actions});
-	article.fetch({
-		success: function(model, resp) {
-			var articleView = new ArticleView({model:model});
-			$("#view-content").html(articleView.el);
-		}
-	});
-});
-
-Backbone.history.start();
